@@ -15,3 +15,6 @@ bkit-system
 docs/.pdca-snapshots/
 docs/.pdca-status.json
 docs/.bkit-memory.json
+
+# bkit-codex
+.bkit-codex/

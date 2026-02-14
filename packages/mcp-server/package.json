@@ -5,7 +5,11 @@
   "main": "index.js",
   "scripts": {
     "start": "node index.js",
-    "test": "node --test tests/server.test.js tests/tools.test.js tests/lib.test.js"
+    "test": "node --test tests/**/*.test.js",
+    "test:unit": "node --test tests/lib*.test.js tests/lib/**/*.test.js",
+    "test:tools": "node --test tests/tools*.test.js tests/tools/**/*.test.js",
+    "test:integration": "node --test tests/integration*.test.js tests/integration/**/*.test.js",
+    "test:philosophy": "node --test tests/*philosophy*.test.js tests/philosophy/**/*.test.js"
   },
   "keywords": ["bkit", "codex", "mcp", "pdca"],
   "author": "POPUP STUDIO PTE. LTD.",
