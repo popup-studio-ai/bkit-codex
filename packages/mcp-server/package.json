@@ -1,0 +1,14 @@
+{
+  "name": "@popup-studio/bkit-codex-mcp",
+  "version": "1.0.0",
+  "description": "bkit MCP Server for OpenAI Codex - PDCA methodology automation",
+  "main": "index.js",
+  "scripts": {
+    "start": "node index.js",
+    "test": "node --test tests/server.test.js tests/tools.test.js tests/lib.test.js"
+  },
+  "keywords": ["bkit", "codex", "mcp", "pdca"],
+  "author": "POPUP STUDIO PTE. LTD.",
+  "license": "Apache-2.0",
+  "engines": { "node": ">=18.0.0" }
+}

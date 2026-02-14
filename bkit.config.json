@@ -1,0 +1,29 @@
+{
+  "version": "1.0.0",
+  "pdca": {
+    "matchRateThreshold": 90,
+    "maxIterations": 5,
+    "statusFile": "docs/.pdca-status.json",
+    "memoryFile": "docs/.bkit-memory.json"
+  },
+  "taskClassification": {
+    "thresholds": { "quickFix": 10, "minorChange": 50, "feature": 200 }
+  },
+  "levelDetection": {
+    "enterprise": { "directories": ["kubernetes", "terraform", "k8s", "infra"] },
+    "dynamic": {
+      "directories": ["lib/bkend", "supabase", "api", "backend"],
+      "files": [".mcp.json", "docker-compose.yml"],
+      "packagePatterns": ["bkend", "@supabase", "firebase"]
+    }
+  },
+  "conventions": {
+    "naming": {
+      "components": "PascalCase",
+      "functions": "camelCase",
+      "constants": "UPPER_SNAKE_CASE",
+      "files": "kebab-case"
+    }
+  },
+  "supportedLanguages": ["en", "ko", "ja", "zh", "es", "fr", "de", "it"]
+}

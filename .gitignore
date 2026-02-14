@@ -1,0 +1,17 @@
+# OS
+.DS_Store
+Thumbs.db
+
+# Node
+node_modules/
+
+# bkit local state
+.bkit/
+.codex/
+.claude/
+bkit-system
+
+# PDCA snapshots (auto-generated)
+docs/.pdca-snapshots/
+docs/.pdca-status.json
+docs/.bkit-memory.json

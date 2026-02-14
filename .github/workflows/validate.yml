@@ -1,0 +1,14 @@
+name: Validate Skills
+on: [push, pull_request]
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+      - name: Validate SKILL.md files
+        run: node scripts/validate-skills.js
+      - name: Validate MCP server
+        run: cd packages/mcp-server && node --test tests/server.test.js tests/tools.test.js tests/lib.test.js
