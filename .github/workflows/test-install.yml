@@ -1,0 +1,42 @@
+name: Test Install Scripts
+on:
+  push:
+    paths:
+      - 'install.sh'
+      - 'install.ps1'
+      - 'uninstall.sh'
+      - 'uninstall.ps1'
+      - 'tests/install/**'
+      - '.github/workflows/test-install.yml'
+  pull_request:
+    paths:
+      - 'install.sh'
+      - 'install.ps1'
+      - 'uninstall.sh'
+      - 'uninstall.ps1'
+      - 'tests/install/**'
+      - '.github/workflows/test-install.yml'
+
+jobs:
+  test-unix:
+    strategy:
+      matrix:
+        os: [ubuntu-latest, macos-latest]
+    runs-on: ${{ matrix.os }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+      - name: Run install tests
+        run: bash tests/install/install-test.sh
+
+  test-skills-validation:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+      - name: Validate skills
+        run: node scripts/validate-skills.js
