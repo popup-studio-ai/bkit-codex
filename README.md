@@ -32,9 +32,9 @@ bkit-codex implements Context Engineering through three interconnected layers:
 
 | Layer | Components | Count | Purpose |
 |-------|-----------|-------|---------|
-| **Domain Knowledge** | Skills | 26 | Structured expert knowledge activated on-demand via progressive disclosure |
+| **Domain Knowledge** | Skills | 27 | Structured expert knowledge activated on-demand via progressive disclosure |
 | **Behavioral Rules** | AGENTS.md | 2 files | Global + Project rules with MUST/ALWAYS/NEVER enforcement |
-| **State Management** | MCP Tools + Lib Modules | 16 + 75 fn | PDCA status tracking, intent detection, template management, memory persistence |
+| **State Management** | MCP Tools + Lib Modules | 16 + 80 fn | PDCA status tracking, intent detection, template management, memory persistence, context recovery |
 
 ---
 
@@ -93,7 +93,7 @@ bkit-codex (Instruction-Driven, ~70% Auto)
 
 ```
 bkit-codex/
-|-- .agents/skills/          # 26 Codex Agent Skills
+|-- .agents/skills/          # 27 Codex Agent Skills
 |   |-- bkit-rules/          # Core rules reference
 |   |-- pdca/                # PDCA workflow management
 |   |-- bkit-templates/      # Template selection
@@ -107,13 +107,14 @@ bkit-codex/
 |   |-- mobile-app/          # React Native, Flutter, Expo
 |   |-- desktop-app/         # Electron, Tauri
 |   |-- codex-learning/      # Codex CLI guide
+|   |-- plan-plus/           # Brainstorming-enhanced planning
 |   +-- bkend-*/             # bkend.ai ecosystem (5 skills)
 |
 |-- packages/mcp-server/     # MCP Server (zero external dependencies)
 |   |-- index.js             # STDIO transport (JSON-RPC 2.0)
 |   |-- src/server.js        # Request dispatcher
 |   |-- src/tools/           # 16 MCP tool implementations
-|   +-- src/lib/             # Core library (~75 functions)
+|   +-- src/lib/             # Core library (~80 functions)
 |       |-- core/            # config, cache, file, path
 |       |-- pdca/            # status, level, phase, automation, template
 |       |-- intent/          # language, trigger, ambiguity
@@ -124,6 +125,7 @@ bkit-codex/
 |-- bkit.config.json         # Centralized configuration
 |-- install.sh               # Unix/Mac installer
 |-- install.ps1              # Windows installer
+|-- scripts/sync-deploy.sh   # Dev-to-deploy sync utility
 |-- docs/                    # Documentation
 +-- .github/workflows/       # CI/CD (npm publish)
 ```
@@ -134,11 +136,14 @@ bkit-codex/
 
 - **PDCA Methodology** -- Structured development with automatic documentation and phase enforcement
 - **16 MCP Tools** -- Session management, intent detection, PDCA workflow, template generation, memory persistence
-- **26 Agent Skills** -- Domain-specific knowledge with progressive disclosure to save context tokens
+- **27 Agent Skills** -- Domain-specific knowledge with progressive disclosure to save context tokens
 - **9-Stage Development Pipeline** -- From schema design to deployment
 - **3 Project Levels** -- Starter (static), Dynamic (fullstack), Enterprise (microservices)
 - **8-Language Support** -- EN, KO, JA, ZH, ES, FR, DE, IT with auto-detection
 - **Zero Dependencies** -- MCP server built with pure Node.js (no `node_modules`)
+- **Context Recovery** -- Automatic state reconstruction after context compaction (recovery mode)
+- **Task Chain** -- Linked PDCA task progression with automatic phase-to-phase advancement
+- **Plan Plus** -- Brainstorming-enhanced planning with intent discovery and YAGNI review
 - **Level-Specific Templates** -- Enterprise design template with 11 sections (security, observability, cost analysis)
 - **Ambiguity Detection** -- Scores user prompts 0-100 and generates clarifying questions when needed
 - **Session Memory** -- Persistent context across sessions via `docs/.bkit-memory.json`
@@ -193,7 +198,7 @@ cat > .codex/config.toml << 'EOF'
 command = "node"
 args = ["./.bkit-codex/packages/mcp-server/index.js"]
 startup_timeout_sec = 10
-tool_timeout_sec = 30
+tool_timeout_sec = 60
 required = true
 EOF
 
@@ -291,8 +296,10 @@ Plan ──> Design ──> Do ──> Check ──> Act ──> Report
 
 - **Design is mandatory**: You cannot skip from Plan directly to Do
 - **Pre-write check**: MCP tool validates design document existence before code changes
-- **Post-write guidance**: MCP tool suggests gap analysis after significant changes (50+ lines)
+- **Post-write guidance**: MCP tool suggests gap analysis after significant changes (>10 new lines or >20 modified lines)
 - **Iteration loop**: Check and Act repeat until match rate reaches 90% (max 5 iterations)
+- **Context recovery**: After context compaction, call `bkit_get_status` with `mode: "recovery"` to reconstruct state
+- **Task chain**: Each feature creates a linked Plan->Design->Do->Check->Report task chain with automatic advancement
 
 ---
 
@@ -314,13 +321,13 @@ The MCP server provides 16 tools via JSON-RPC 2.0 over STDIO with **zero externa
 
 | Tool | Category | Purpose |
 |------|----------|---------|
-| `bkit_init` | Session | Initialize session, detect level, load PDCA status |
+| `bkit_init` | Session | Initialize session, detect level, load PDCA status, compact summary |
 | `bkit_analyze_prompt` | Intent | Detect language, match triggers, score ambiguity (8 languages) |
-| `bkit_get_status` | PDCA | Retrieve current PDCA status with recommendations |
+| `bkit_get_status` | PDCA | Retrieve current PDCA status with recommendations (supports recovery mode) |
 | `bkit_pre_write_check` | PDCA | Pre-write compliance check (design document existence) |
 | `bkit_post_write` | PDCA | Post-write guidance (gap analysis suggestions) |
-| `bkit_complete_phase` | PDCA | Mark phase complete, validate transition, advance to next |
-| `bkit_pdca_plan` | Template | Generate plan document template with level-specific sections |
+| `bkit_complete_phase` | PDCA | Mark phase complete, validate transition, advance task chain |
+| `bkit_pdca_plan` | Template | Generate plan document template with level-specific sections and task chain |
 | `bkit_pdca_design` | Template | Generate design template (Starter/Dynamic/Enterprise variants) |
 | `bkit_pdca_analyze` | Template | Generate gap analysis template |
 | `bkit_pdca_next` | PDCA | Recommend next PDCA action based on current state |
@@ -333,11 +340,12 @@ The MCP server provides 16 tools via JSON-RPC 2.0 over STDIO with **zero externa
 
 ---
 
-## Skills (26)
+## Skills (27)
 
 | Skill | Category | Trigger Examples |
 |-------|----------|-----------------|
 | **pdca** | Core | `$pdca plan`, `$pdca design`, `$pdca analyze` |
+| **plan-plus** | Core | "brainstorming plan", "deep planning", "intent discovery" |
 | **bkit-rules** | Core | Core rules (auto-applied via AGENTS.md) |
 | **bkit-templates** | Core | "plan template", "design template" |
 | **starter** | Level | "static site", "portfolio", "beginner" |
@@ -394,7 +402,7 @@ bkit automatically detects your language from trigger keywords in 8 languages:
 command = "node"
 args = ["./.bkit-codex/packages/mcp-server/index.js"]
 startup_timeout_sec = 10
-tool_timeout_sec = 30
+tool_timeout_sec = 60
 required = true
 ```
 
@@ -439,7 +447,7 @@ bkit-codex is a port of [bkit-claude-code](https://github.com/popup-studio-ai/bk
 | State management | Hook scripts | MCP tools |
 | Hooks | 10 hook events (45 scripts) | N/A (rules in AGENTS.md) |
 | Team orchestration | CTO-Led Agent Teams | N/A |
-| Functions | 241 (5 lib modules) | 75 (4 lib modules) |
+| Functions | 241 (5 lib modules) | 80 (4 lib modules) |
 | Commands | Slash commands (`/pdca`) | Skill invocation (`$pdca`) |
 | Dependencies | Node.js modules | Zero external dependencies |
 
@@ -457,8 +465,10 @@ bkit-codex is a port of [bkit-claude-code](https://github.com/popup-studio-ai/bk
 
 - No hook system -- enforcement relies on AGENTS.md rules + MCP tool guidance
 - No team orchestration -- Codex CLI doesn't support agent spawning
-- Reduced function set (75 of 241) -- excluded hook I/O, team management, Claude Code-specific modules
+- Reduced function set (80 of 241) -- excluded hook I/O, team management, Claude Code-specific modules
 - Skills use Codex-native `SKILL.md` format with `openai.yaml` manifest
+- Context recovery mode for state reconstruction after compaction
+- Task chain with automatic phase-to-phase advancement
 
 ---
 

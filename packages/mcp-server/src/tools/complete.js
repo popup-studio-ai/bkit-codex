@@ -1,6 +1,6 @@
 'use strict';
 
-const { setFeaturePhase, readPdcaStatus, writePdcaStatus, addFeature } = require('../lib/pdca/status');
+const { setFeaturePhase, readPdcaStatus, writePdcaStatus, addFeature, updateTaskChain } = require('../lib/pdca/status');
 const { getNextPhase, validatePhaseTransition } = require('../lib/pdca/phase');
 const { formatPdcaProgress } = require('../lib/pdca/automation');
 const { invalidateCache } = require('../lib/core/cache');
@@ -87,12 +87,22 @@ async function handler(args, context) {
     recommendation = `PDCA cycle complete for '${feature}'. Consider archiving: $pdca archive ${feature}`;
   }
 
+  // Update task chain status (C-4)
+  const updatedChain = await updateTaskChain(projectDir, feature, phase);
+  if (updatedChain) {
+    const activeTask = updatedChain.find(t => t.status === 'active');
+    if (activeTask) {
+      recommendation += ` Next task in chain: ${activeTask.phase.toUpperCase()}.`;
+    }
+  }
+
   return {
     completed: phase,
     nextPhase: nextPhase || 'completed',
     feature,
     recommendation,
-    progress
+    progress,
+    taskChain: updatedChain || null
   };
 }
 

@@ -144,6 +144,40 @@ describe('MCP Tool Definitions', () => {
   }
 });
 
+describe('v1.0.0 Integration: New tool capabilities', () => {
+  const tools = getToolDefinitions();
+
+  it('bkit_init should have compactSummary capability (handler returns it)', () => {
+    const initTool = tools.find(t => t.name === 'bkit_init');
+    assert.ok(initTool, 'bkit_init tool should exist');
+    assert.ok(initTool.inputSchema.properties.projectDir, 'Should have projectDir param');
+  });
+
+  it('bkit_get_status should have mode parameter for recovery', () => {
+    const statusTool = tools.find(t => t.name === 'bkit_get_status');
+    assert.ok(statusTool, 'bkit_get_status tool should exist');
+    assert.ok(statusTool.inputSchema.properties.mode, 'Should have mode parameter');
+    assert.deepStrictEqual(
+      statusTool.inputSchema.properties.mode.enum,
+      ['normal', 'recovery'],
+      'mode enum should be [normal, recovery]'
+    );
+  });
+
+  it('bkit_pdca_plan should have feature as required param', () => {
+    const planTool = tools.find(t => t.name === 'bkit_pdca_plan');
+    assert.ok(planTool, 'bkit_pdca_plan tool should exist');
+    assert.ok(planTool.inputSchema.required.includes('feature'), 'feature should be required');
+  });
+
+  it('bkit_complete_phase should have feature and phase as required params', () => {
+    const completeTool = tools.find(t => t.name === 'bkit_complete_phase');
+    assert.ok(completeTool, 'bkit_complete_phase tool should exist');
+    assert.ok(completeTool.inputSchema.required.includes('feature'), 'feature should be required');
+    assert.ok(completeTool.inputSchema.required.includes('phase'), 'phase should be required');
+  });
+});
+
 describe('Tool Definition Consistency', () => {
   const tools = getToolDefinitions();
 

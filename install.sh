@@ -143,7 +143,7 @@ validate_install() {
   if [ "$skill_count" -ge 20 ]; then
     ok "$skill_count skills linked"
   else
-    warn "Only $skill_count skills found (expected 26)"
+    warn "Only $skill_count skills found (expected 27)"
   fi
 
   # Check MCP server responds

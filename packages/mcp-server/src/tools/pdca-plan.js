@@ -1,8 +1,9 @@
 'use strict';
 
 const { selectTemplate, getTemplateContent, resolveTemplateVariables } = require('../lib/pdca/template');
-const { addFeature } = require('../lib/pdca/status');
+const { addFeature, readPdcaStatus, writePdcaStatus } = require('../lib/pdca/status');
 const { detectLevel } = require('../lib/pdca/level');
+const { createTaskChain } = require('../lib/task/creator');
 
 /**
  * bkit_pdca_plan - Generate plan document template.
@@ -35,6 +36,22 @@ async function handler(args, context) {
   // Register feature in PDCA status
   await addFeature(projectDir, feature, 'plan');
 
+  // Create task chain and persist to status (C-4)
+  const chain = createTaskChain(feature);
+  const status = await readPdcaStatus(projectDir);
+  if (status.features[feature] && !status.features[feature].taskChain) {
+    status.features[feature].taskChain = chain.tasks.map(t => ({
+      phase: t.phase,
+      status: t.status,
+      createdAt: t.createdAt
+    }));
+    status.features[feature].timestamps = {
+      started: new Date().toISOString(),
+      lastUpdated: new Date().toISOString()
+    };
+    await writePdcaStatus(projectDir, status);
+  }
+
   const outputPath = `docs/01-plan/features/${feature}.plan.md`;
 
   return {
@@ -42,7 +59,12 @@ async function handler(args, context) {
     outputPath,
     phase: 'plan',
     level,
-    guidance: `Fill in the template sections. When complete, call bkit_complete_phase('${feature}', 'plan').`
+    guidance: `Fill in the template sections. When complete, call bkit_complete_phase('${feature}', 'plan').`,
+    taskChain: {
+      created: true,
+      tasks: chain.tasks,
+      guidance: chain.guidance
+    }
   };
 }
 

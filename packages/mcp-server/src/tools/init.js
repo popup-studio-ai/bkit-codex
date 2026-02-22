@@ -1,7 +1,7 @@
 'use strict';
 
 const { detectLevel, getLevelConfig } = require('../lib/pdca/level');
-const { readPdcaStatus } = require('../lib/pdca/status');
+const { readPdcaStatus, getCompactSummary } = require('../lib/pdca/status');
 const { loadConfig } = require('../lib/core/config');
 const { generatePdcaGuidance } = require('../lib/pdca/automation');
 const { setCache } = require('../lib/core/cache');
@@ -34,6 +34,9 @@ async function handler(args, context) {
   pdcaStatus.session.startedAt = new Date().toISOString();
   pdcaStatus.session.lastActivity = new Date().toISOString();
 
+  // Fix platform field (FR-11)
+  pdcaStatus.session.platform = 'codex';
+
   // Generate guidance
   let guidance = `Project detected as ${levelResult.level} level.`;
   const primaryFeature = pdcaStatus.primaryFeature;
@@ -45,6 +48,9 @@ async function handler(args, context) {
 
   const sessionId = `bkit-${Date.now()}`;
 
+  // Compact summary for compaction resilience (C-3)
+  const compactSummary = getCompactSummary(pdcaStatus);
+
   const result = {
     level: levelResult.level,
     levelEvidence: levelResult.evidence,
@@ -55,6 +61,8 @@ async function handler(args, context) {
       primaryFeature: pdcaStatus.primaryFeature,
       features: pdcaStatus.features
     },
+    compactSummary,
+    contextRecoveryHint: 'If context seems incomplete, call bkit_get_status with mode: "recovery".',
     sessionId,
     guidance
   };

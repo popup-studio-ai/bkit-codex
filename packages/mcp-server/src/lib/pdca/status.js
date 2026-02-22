@@ -210,6 +210,82 @@ async function getArchivedFeatures(projectDir) {
   );
 }
 
+/**
+ * Generate a compact summary string for compaction resilience (C-3).
+ * Format: "{feature}|{phase}|{matchRate}%|iter:{count}|tasks:{chainLength}"
+ * @param {object} pdcaStatus - Full PDCA status object
+ * @returns {string}
+ */
+function getCompactSummary(pdcaStatus) {
+  const primary = pdcaStatus.primaryFeature;
+  if (!primary) return 'no-feature|none|0%|iter:0|tasks:0';
+
+  const feature = pdcaStatus.features[primary];
+  if (!feature) return `${primary}|unknown|0%|iter:0|tasks:0`;
+
+  const phase = feature.phase || 'unknown';
+  const matchRate = feature.matchRate !== null && feature.matchRate !== undefined
+    ? Math.round(feature.matchRate)
+    : 0;
+  const iterationCount = feature.iterationCount || 0;
+  const taskChainLength = feature.taskChain ? feature.taskChain.length : 0;
+
+  return `${primary}|${phase}|${matchRate}%|iter:${iterationCount}|tasks:${taskChainLength}`;
+}
+
+/**
+ * Parse a compact summary string back into structured data (C-3).
+ * @param {string} summary
+ * @returns {{ feature: string, phase: string, matchRate: number, iterationCount: number, taskCount: number }|null}
+ */
+function parseCompactSummary(summary) {
+  if (!summary || typeof summary !== 'string') return null;
+  const parts = summary.split('|');
+  if (parts.length < 5) return null;
+
+  return {
+    feature: parts[0],
+    phase: parts[1],
+    matchRate: parseInt(parts[2]) || 0,
+    iterationCount: parseInt((parts[3] || '').replace('iter:', '')) || 0,
+    taskCount: parseInt((parts[4] || '').replace('tasks:', '')) || 0
+  };
+}
+
+/**
+ * Update task chain status when a phase is completed (C-4).
+ * Marks current phase as 'completed' and next phase as 'active'.
+ * @param {string} projectDir
+ * @param {string} feature
+ * @param {string} completedPhase
+ * @returns {Promise<object[]|null>} Updated task chain or null
+ */
+async function updateTaskChain(projectDir, feature, completedPhase) {
+  const status = await readPdcaStatus(projectDir);
+  const featureData = status.features[feature];
+
+  if (!featureData || !featureData.taskChain) return null;
+
+  let foundCurrent = false;
+  for (const task of featureData.taskChain) {
+    if (task.phase === completedPhase && task.status === 'active') {
+      task.status = 'completed';
+      task.completedAt = new Date().toISOString();
+      foundCurrent = true;
+    } else if (foundCurrent && task.status === 'pending') {
+      task.status = 'active';
+      foundCurrent = false;
+    }
+  }
+
+  if (featureData.timestamps) {
+    featureData.timestamps.lastUpdated = new Date().toISOString();
+  }
+
+  await writePdcaStatus(projectDir, status);
+  return featureData.taskChain;
+}
+
 module.exports = {
   readPdcaStatus,
   writePdcaStatus,
@@ -220,5 +296,8 @@ module.exports = {
   getActiveFeatures,
   getPrimaryFeature,
   setPrimaryFeature,
-  getArchivedFeatures
+  getArchivedFeatures,
+  getCompactSummary,
+  parseCompactSummary,
+  updateTaskChain
 };
