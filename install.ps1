@@ -155,7 +155,7 @@ function Test-Installation {
         if ($skillCount -ge 20) {
             Write-Ok "$skillCount skills linked"
         } else {
-            Write-Warn "Only $skillCount skills found (expected 26)"
+            Write-Warn "Only $skillCount skills found (expected 27)"
         }
     }
 

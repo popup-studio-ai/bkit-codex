@@ -67,8 +67,33 @@ function getTaskTemplate(phase) {
   };
 }
 
+/**
+ * Create a full PDCA task chain for a feature (C-4).
+ * Generates 5 linked tasks: Plan -> Design -> Do -> Check -> Report
+ * @param {string} feature - Feature name
+ * @returns {{ tasks: object[], guidance: string }}
+ */
+function createTaskChain(feature) {
+  const phases = ['plan', 'design', 'do', 'check', 'report'];
+  const now = new Date().toISOString();
+
+  const tasks = phases.map((phase, index) => ({
+    phase,
+    subject: formatTaskSubject(feature, phase),
+    description: PHASE_TEMPLATES[phase] ? PHASE_TEMPLATES[phase].description : `Complete ${phase} phase`,
+    status: index === 0 ? 'active' : 'pending',
+    createdAt: now
+  }));
+
+  return {
+    tasks,
+    guidance: `PDCA task chain created with ${tasks.length} tasks. Complete [PLAN] then proceed to [DESIGN].`
+  };
+}
+
 module.exports = {
   createPdcaTask,
   formatTaskSubject,
-  getTaskTemplate
+  getTaskTemplate,
+  createTaskChain
 };
