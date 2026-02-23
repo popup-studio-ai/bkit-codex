@@ -380,9 +380,11 @@ function Invoke-Install {
         New-Item -ItemType Directory -Force -Path $ConfigDir | Out-Null
     }
 
-    # Determine MCP path
+    # Determine MCP path (global mode must use absolute paths so codex
+    # can find the MCP server regardless of the working directory)
     if ($InstallMode -eq "global") {
-        $mcpArgs = "[`"$($InstallDir -replace '\\', '/')/packages/mcp-server/index.js`"]"
+        $absolutePath = [System.IO.Path]::GetFullPath($InstallDir) -replace '\\', '/'
+        $mcpArgs = "[`"$absolutePath/packages/mcp-server/index.js`"]"
     } else {
         $mcpArgs = '["./.bkit-codex/packages/mcp-server/index.js"]'
     }

@@ -326,9 +326,13 @@ do_install() {
   mkdir -p "$CONFIG_DIR"
 
   # Determine MCP server path based on install mode
+  # Global mode must use absolute paths so codex can find the MCP server
+  # regardless of the working directory
   local mcp_args
   if [ "$INSTALL_MODE" = "global" ]; then
-    mcp_args="[\"$HOME/.bkit-codex/packages/mcp-server/index.js\"]"
+    local abs_install_dir
+    abs_install_dir="$(cd "$INSTALL_DIR" && pwd)"
+    mcp_args="[\"$abs_install_dir/packages/mcp-server/index.js\"]"
   else
     mcp_args='["./.bkit-codex/packages/mcp-server/index.js"]'
   fi
