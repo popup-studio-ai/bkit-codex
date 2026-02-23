@@ -5,6 +5,16 @@ All notable changes to bkit-codex will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.0.1] - 2026-02-23
+
+### Fixed
+
+- **plan-plus skill**: Moved `openai.yaml` from skill root to standard `agents/` directory, fixing CI validation failure (26/27 → 27/27)
+
+### Improved
+
+- **validate-skills.js**: Error message now includes expected file path for easier debugging
+
 ## [1.0.0] - 2026-02-14
 
 ### Added

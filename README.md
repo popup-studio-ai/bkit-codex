@@ -2,7 +2,7 @@
 
 [![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](https://opensource.org/licenses/Apache-2.0)
 [![Codex CLI](https://img.shields.io/badge/Codex%20CLI-v0.100.0+-blue.svg)](https://github.com/openai/codex)
-[![Version](https://img.shields.io/badge/Version-1.0.0-green.svg)](CHANGELOG.md)
+[![Version](https://img.shields.io/badge/Version-1.0.1-green.svg)](CHANGELOG.md)
 [![Author](https://img.shields.io/badge/Author-POPUP%20STUDIO-orange.svg)](https://popupstudio.ai)
 
 > **PDCA methodology + Context Engineering for AI-native development**

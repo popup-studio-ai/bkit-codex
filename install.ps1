@@ -15,7 +15,7 @@ param(
 $ErrorActionPreference = "Stop"
 
 $Repo = "popup-studio-ai/bkit-codex"
-$BkitVersion = "1.0.0"
+$BkitVersion = "1.0.1"
 
 # When piped via iex, params aren't available. Detect via args:
 if ($args -contains "--global")    { $Global = $true }

@@ -4,7 +4,7 @@ const path = require('path');
 const { readJsonFile, fileExists } = require('./file');
 
 const DEFAULT_CONFIG = {
-  version: '1.0.0',
+  version: '1.0.1',
   pdca: {
     matchRateThreshold: 90,
     maxIterations: 5,

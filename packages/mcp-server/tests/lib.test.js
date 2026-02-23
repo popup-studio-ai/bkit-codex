@@ -28,7 +28,7 @@ describe('core/config - loadConfig', () => {
   it('should return default config when no project config exists', async () => {
     const tmpDir = fs.mkdtempSync(path.join(os.tmpdir(), 'bkit-test-'));
     const config = await loadConfig(tmpDir);
-    assert.strictEqual(config.version, '1.0.0');
+    assert.strictEqual(config.version, '1.0.1');
     assert.ok(config.pdca, 'Config should have pdca section');
     assert.ok(config.taskClassification, 'Config should have taskClassification section');
     fs.rmSync(tmpDir, { recursive: true, force: true });
