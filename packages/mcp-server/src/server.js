@@ -4,7 +4,7 @@ const { getToolDefinitions, executeToolCall } = require('./tools');
 
 const PROTOCOL_VERSION = '2024-11-05';
 const SERVER_NAME = 'bkit-codex-mcp';
-const SERVER_VERSION = '1.0.0';
+const SERVER_VERSION = '1.0.1';
 
 /**
  * Create a JSON-RPC 2.0 MCP server instance.

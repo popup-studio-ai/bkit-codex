@@ -1,6 +1,6 @@
 {
   "name": "@popup-studio/bkit-codex-mcp",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "bkit MCP Server for OpenAI Codex - PDCA methodology automation",
   "main": "index.js",
   "scripts": {

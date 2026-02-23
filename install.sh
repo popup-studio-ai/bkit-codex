@@ -8,7 +8,7 @@
 set -euo pipefail
 
 REPO="popup-studio-ai/bkit-codex"
-BKIT_VERSION="1.0.0"
+BKIT_VERSION="1.0.1"
 
 # ── Color helpers ──────────────────────────────────────────────────────────────
 

@@ -159,7 +159,7 @@ function main() {
     // Check agents/openai.yaml
     const yamlFile = path.join(skillDir, 'agents', 'openai.yaml');
     if (!fs.existsSync(yamlFile)) {
-      errors.push('Missing agents/openai.yaml');
+      errors.push(`Missing agents/openai.yaml (expected at ${yamlFile})`);
     } else {
       const yamlErr = validateYamlFile(yamlFile);
       if (yamlErr) {
